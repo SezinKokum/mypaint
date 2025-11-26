@@ -28,7 +28,6 @@ jobs:
                   python3-nose \
                   python3-numpy \
                   python3-setuptools \
-                  python3-coverage \
                   swig \
                   git \
                   xvfb
@@ -61,16 +60,10 @@ jobs:
                 python3 setup.py build
             - name: "Run tests"
               run: |
-                python3 -m coverage run --source=lib,gui setup.py nosetests --tests lib
-                python3 -m coverage run --append --source=lib,gui setup.py test
-                python3 -m coverage xml
+                python3 setup.py nosetests --tests lib
+                python3 setup.py test
                 python3 setup.py clean --all
                 MYPAINT_DEBUG=1 xvfb-run -a python setup.py demo --args='--run-and-quit'
                 sudo python3 setup.py managed_install
                 sudo python3 setup.py managed_uninstall
                 bash appimage/trigger_build.sh
-            - name: "SonarCloud Scan"
-              uses: SonarSource/sonarcloud-github-action@master
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
